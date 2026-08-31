@@ -28,8 +28,8 @@ Write it out as pseudocode here, filling in the blanks and adding more fake code
 ``` 
 function leaving_the_house {
     always_need phone, wallet, keys, airpods, backpack, glasses
-    if mondday, wednesday then bring change of clothes
-    otherwise ___
+    if monday, wednesday then bring change of clothes
+    if tuesday, bring journal
     
 }
 ```
@@ -38,8 +38,20 @@ From your pseudocode, decide on your arguments and write out a working R functio
 
 ```{r}
 #| label: leaving-the-house-definition
-leaving_the_house <- function() {
+leaving_the_house <- function(day) {
   
+always <- c("phone", "wallet", "keys", "airpods", "sunglasses", "bag")
+
+  if (day %in% c("Monday", "Wednesday")) {
+    # days I go to work
+    items <- c(always, "change of clothes")
+  } else if (day %in% c("Tuesday")) {
+    # I have a 5 hour break between classes on Tuesdays :/
+    items <- c(always, "journal")
+  } else {
+    items <- always
+  }
+  return(items)
 }
 ```
 
@@ -48,11 +60,15 @@ Then call your function a few times with different arguments. Start with ones th
 
 ```{r}
 #| label: leaving-the-house-calls 
-today <- leaving_the_house()
+# examples from original code
+today <- leaving_the_house("Thursday")
 today
 
-tomorrow <- leaving_the_house()
+tomorrow <- leaving_the_house("Friday")
 tomorrow
+
+# both are the same so here's me calling the functions for other days and testing it works
+leaving_the_house("Monday")
 ```
 
 
@@ -91,11 +107,14 @@ should return `c(1.5, 2.5, 4.5)`. You'll probably find this looks best if you nu
 ```{r}
 #| label: labels-definition-1
 label_nudge <- function(y) {
-    # do your calculations here
-    # when you're ready, replace 0 with your return value
+
+    # Calculate an offset equal to 5% of the largest bar
     offset <- 0.05 * max(y)
 
-    return(y - offset)
+    # Place labels slightly below the top of each bar
+    label_position <- y - offset
+
+    return(label_position)
 }
 
 label_nudge(data1$value)
@@ -164,13 +183,26 @@ comma_vals <- c(2345, 10123.4, 999, 1205) # want 2,345; 10,123; 999; 1,205
 ```{r}
 #| label: fmt-functions-1
 # define functions here
-percent1 <- function(x) {}
+
+percent_vals <- c(0.05, 0.1, 0.512, 0.678) # want 5%, 10%, 51%, 68%
+dollar_vals <- c(100, 110.70, 823, 1123) # want $100; $111; $823; $1,123
+comma_vals <- c(2345, 10123.4, 999, 1205) # want 2,345; 10,123; 999; 1,205
+
+# paste0 for no spaces between things, paste for spaces
+
+percent1 <- function(x) {
+  paste0(round(x * 100), "%")
+}
 percent1(percent_vals)
 
-dollar1 <- function(x) {}
+dollar1 <- function(x) {
+  paste0("$", formatC(round(x), format = "f", big.mark = ",", digits = 0))
+}
 dollar1(dollar_vals)
 
-comma1 <- function(x) {}
+comma1 <- function(x) {
+  formatC(round(x), format = "f", big.mark = ",", digits = 0)
+}
 comma1(comma_vals)
 ```
 
@@ -184,6 +216,10 @@ First, call one of the `scales` functions and assign the result to a variable. T
 #| label: function-factories
 number <- scales::label_number()
 class(number)
+
+# calling another scales function
+color <- scales::pal_viridis()()
+class(color)
 ```
 
 The `scales::label_*` functions are actually _function factories_, functions that return functions. This might seem weird, but they help you develop custom number formatting functions that are both specific and reusable. You can read details about function factories in [Advanced R](https://adv-r.hadley.nz/function-factories.html).
@@ -194,6 +230,19 @@ Define another set of functions, now using `scales::label_percent`, `scales::lab
 #| label: scales-example 
 decimal <- scales::label_number(accuracy = 0.01)
 decimal(c(1.234, 5.1, 10.999))
+
+#| label: scales-label-percent
+percent <- scales::label_percent(accuracy = 0.01)
+percent(c(1.234, 5.1, 10.999))
+
+#| label: scales-label-currency
+currency <- scales::label_currency(accuracy = 0.01)
+currency(c(1.234, 5.1, 10.999))
+
+#| label: scales-label-comma
+comma <- scales::label_comma(accuracy = 0.01)
+comma(c(1.234, 5.1, 10.999))
+
 ```
 
 ## 4. Finishing up
