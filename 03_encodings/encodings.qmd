@@ -26,7 +26,9 @@ For each chart, jot down the following:
 
 ![Chart 1](./tenure_bars_vert.png)
 
-_Fill in notes here_
+type of chart: bar chart
+
+
 
 ### Chart 2
 
@@ -73,6 +75,10 @@ For each of these charts, write down what is wrong with the encodings. Then edit
 #| label: setup
 library(dplyr)
 library(ggplot2)
+
+# kept giving me a warning that said these were built under earlier versions of R? was getting annoying so turned off cuz I dont think that matters
+suppressWarnings(library(ggplot2))
+suppressWarnings(library(dplyr))
 
 # set a default theme
 theme_set(
